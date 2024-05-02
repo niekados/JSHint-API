@@ -10,14 +10,29 @@ const resultsModal = new bootstrap.Modal(document.getElementById("resultsModal")
 document.getElementById("status").addEventListener("click", e => getStatus(e));
 document.getElementById("submit").addEventListener("click", e => postForm(e));
 
+function processOptions(form) {
+    let optionsArray = [];
+    for (let entry of form.entries()) {
+        if (entry[0] === "options") {
+            optionsArray.push(entry[1]);
+        }
+    }
+    form.delete("options");
+
+    form.append("options", optionsArray.join()); //join() by default joins separated by commas.
+
+    return form;
+}
+
 // asyncronous promise - When we’re handling promises, we have two ways of doing it.
 // We can chain “.then”s as we did before, 
 // or we can wrap the promises in  an async function - like this - and then await the promise coming true.
+
 async function postForm(e) {
 
     // https://developer.mozilla.org/en-US/docs/Web/API/FormData - 
     // FormData interface provides a way to construct a set of key/value pairs representing form fields and their values
-    const form = new FormData(document.getElementById("checksform"));
+    const form = processOptions(new FormData(document.getElementById("checksform")));
 
     const response = await fetch(API_URL, {
         method: "POST",
